@@ -1,108 +1,63 @@
-# Air-Piano🎹:
+# Air Tiles
 
-Control MIDI piano chords in real-time using hand gestures captured from your webcam. Each finger is mapped to a chord in the D major scale, and chords play and sustain naturally as you move your fingers.
+A Real-Time Gesture-Controlled Synthwave Rhythm Game Using Webcam Hand Tracking and Temporal Filtering.
 
----
+## Team
+* Snehal Jain
+* Parth Tiwari
+* Institution: SVKM NMIMS Indore
+* Program: MBA Tech 3rd Year
+* Course: Image and Video Processing IVP
 
-## 📦 Features
+## Project Overview
+Air Tiles is a retro-synthwave rhythm game in which the player slides a bar left and right with their index finger, tracked by an ordinary webcam, to catch falling tiles. 
 
-- 🖐️ Real-time hand detection using [cvzone](https://github.com/cvzone/cvzone)
-- 🎼 Chord mapping to fingers (D major scale)
-- 🎹 MIDI output with sustain effect using `pygame.midi`
-- 👏 Supports both left and right hands
-- 🎶 Dynamic gesture-based music interaction
+Standard webcams capture noisy video at about 30 frames per second FPS, while games must render at 60 FPS to remain smooth. This project solves the resulting lag and stuttering by moving the vision processing into an asynchronous background thread and applying a speed-adaptive One Euro filter. The outcome is a playable, responsive, touch-free game that runs on a standard laptop.
 
----
+## Key Features
+* Touch-Free Interaction: Predicts 21 3D hand landmarks in real-time, mapping the index fingertip to game controls.
+* Asynchronous Architecture: Decouples the 30 Hz computer vision thread from the fixed 60 Hz Pygame rendering loop, eliminating frozen frames.
+* Advanced Temporal Filtering: Uses a One Euro filter and a frame-rate-independent exponential glide to remove landmark jitter while maintaining fast response times.
+* Synthwave Aesthetics: Built with ordered dithering Bayer matrix for sky gradients, alpha compositing for glowing panels, and retro pixel-art text.
+* Dynamic Gameplay: Features a 70-second challenge with a linear difficulty ramp increasing tile speed and spawn rates, combo multipliers, and an interactive menu.
 
-## 🚀 Getting Started
+## Tech Stack
+* Language: Python 3.12
+* Computer Vision: OpenCV cv2 for real-time capture, geometric transforms, spatial resampling, and color-space conversions.
+* Machine Learning: MediaPipe Hands via cvzone wrapper for lightweight CPU-bound hand tracking.
+* Game Engine: Pygame for 60 FPS graphics rendering, input handling, and audio playback.
 
-### 1. Clone the Repository
+## How to Run
 
-```bash
-git clone https://github.com/yourusername/hand-midi-chords.git
-cd hand-midi-chords
-```
+1. Clone the repository:
+bash
+git clone [https://github.com/snehaljainnn/Air-Piano.git](https://github.com/snehaljainnn/Air-Piano.git)
+cd Air-Piano
+Create and activate a virtual environment Recommended:
 
-### 2. Install Dependencies
+Bash
+python -m venv venv
+source venv/bin/activate
+Install dependencies:
 
-Make sure Python 3.7+ is installed.
+Bash
+pip install -r requirements.txt
+Add Music:
+Ensure your mp3 files e.g. cheapthrills.mp3 boywithlove.mp3 dancemonkeys.mp3 are placed inside the music directory.
 
-```bash
-pip install opencv-python pygame cvzone
-```
+Play:
 
-> If `cvzone` is not found, install directly from GitHub:
-```bash
-pip install git+https://github.com/cvzone/cvzone.git
-```
+Bash
+python main.py
+Controls: Use Left and Right arrows to change tracks, Space to start, F11 to toggle fullscreen, and Q or ESC to quit.
 
----
+IVP Concepts Applied
+Geometric Transformations: Mirroring frames cv2.flip so horizontal movement matches the players physical perspective.
 
-## 🎛️ How It Works
+Spatial Resampling: Area interpolation downsampling to 640px to optimize detection speed without severe aliasing.
 
-- The webcam detects your hands in real-time using `cvzone`’s `HandDetector`.
-- Each finger corresponds to a specific chord (left and right hands are mapped identically).
-- When a finger is raised (`fingersUp`), a chord is played.
-- When the finger is lowered, the chord sustains for a short delay before stopping.
+Temporal Filtering: Speed-adaptive 1 Euro low-pass filter coupled with an exponential glide algorithm for coordinate stabilization.
 
-### 🎵 Chord Mapping (D Major Scale)
+Color-Space Conversion: Translating BGR webcam frames to RGB for MediaPipe processing and Pygame rendering.
 
-| Finger  | Chord (Notes)        | Description        |
-|---------|----------------------|--------------------|
-| Thumb   | D Major (62, 66, 69) | D - F# - A          |
-| Index   | E Minor (64, 67, 71) | E - G - B           |
-| Middle  | F# Minor (66, 69, 73)| F# - A - C#         |
-| Ring    | G Major (67, 71, 74) | G - B - D           |
-| Pinky   | A Major (69, 73, 76) | A - C# - E          |
-
-Both hands use the same chord mapping.
-
----
-
-## 🧠 Code Overview
-
-- `pygame.midi.init()` initializes MIDI output.
-- `cvzone.HandTrackingModule.HandDetector` handles hand and finger tracking.
-- `fingersUp()` determines which fingers are raised.
-- MIDI notes are triggered with `note_on` and `note_off` functions.
-- Chords are sustained for a configurable delay (`SUSTAIN_TIME = 2.0`).
-
----
-
-## 💡 Customization
-
-- 🔁 **Change Instrument**:  
-  Modify the instrument using:
-  ```python
-  player.set_instrument(<instrument_number>)
-  ```
-  Refer to the [General MIDI Instrument List](https://www.midi.org/specifications-old/item/gm-level-1-sound-set) for codes.
-
-- 🎼 **Change Chord Scale**:  
-  Replace the `chords` dictionary with your preferred scales or custom mappings.
-
-- ⏱️ **Adjust Sustain Time**:  
-  Modify `SUSTAIN_TIME` (in seconds) to lengthen or shorten the delay after chord release.
-
----
-
-## 🛑 Exit Instructions
-
-- Press `q` on your keyboard to quit the application safely.
-- This releases the webcam and MIDI resources.
-
----
-
-## 🤝 Credits
-
-- [cvzone by Murtaza Hassan](https://github.com/cvzone/cvzone)
-- `pygame.midi` for MIDI interfacing
-- OpenCV for real-time camera input
-
----
-
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
-
----
+Ordered Dithering: Utilizing a 4x4 Bayer matrix to render a banded pixel-art gradient with minimal colors.
